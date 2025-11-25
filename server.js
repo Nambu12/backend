@@ -43,7 +43,7 @@ const coursePDFs = {
 };
 
 // *********** Registration Endpoint ***********
-app.post('/register', async (req, res) => {
+app.post('https://backend-gxcp.onrender.com/register', async (req, res) => {
     const { name, email, mobile, degree, specialization } = req.body;
 
     try {
@@ -94,3 +94,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server Live on PORT ${PORT}`);
 });
+
