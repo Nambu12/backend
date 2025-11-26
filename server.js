@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // CORS for Vercel
 app.use(cors({
-    origin: "https://your-frontend.vercel.app",
+    origin: "https://backend-x16q.onrender.com",
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -92,3 +92,4 @@ app.get('/', (req, res) => {
 
 // Start Server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
