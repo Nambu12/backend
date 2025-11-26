@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // CORS for Vercel
 app.use(cors({
-    origin: "https://backend-x16q.onrender.com",
+    origin: "https://backend-x16q.onrender.com",  // CHANGE THIS
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -26,25 +26,25 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Static PDFs folder
+// *** Correct PDF Absolute Folder Path ***
 const pdfFolder = path.join(__dirname, 'pdfs');
 
-// All course PDFs
+// All course PDFs with CORRECT absolute path
 const coursePDFs = {
-    'Computer Science Engineering': `${pdfFolder}/CSE_Course.pdf`,
-    'Mechanical Engineering': `${pdfFolder}/Mechanical_Course.pdf`,
-    'Electrical Engineering': `${pdfFolder}/Electrical_Course.pdf`,
-    'Civil Engineering': `${pdfFolder}/Civil_Course.pdf`,
-    'Electronics and Communication': `${pdfFolder}/ECE_Course.pdf`,
-    'Information Technology': `${pdfFolder}/IT_Course.pdf`,
-    'Chemical Engineering': `${pdfFolder}/Chemical_Course.pdf`,
-    'English Literature': `${pdfFolder}/English_Course.pdf`,
-    'History': `${pdfFolder}/History_Course.pdf`,
-    'Political Science': `${pdfFolder}/Political_Science_Course.pdf`,
-    'Psychology': `${pdfFolder}/Psychology_Course.pdf`,
-    'Sociology': `${pdfFolder}/Sociology_Course.pdf`,
-    'Economics': `${pdfFolder}/Economics_Course.pdf`,
-    'Fine Arts': `${pdfFolder}/Fine_Arts_Course.pdf`
+    'Computer Science Engineering': path.join(pdfFolder, 'CSE_Course.pdf'),
+    'Mechanical Engineering': path.join(pdfFolder, 'Mechanical_Course.pdf'),
+    'Electrical Engineering': path.join(pdfFolder, 'Electrical_Course.pdf'),
+    'Civil Engineering': path.join(pdfFolder, 'Civil_Course.pdf'),
+    'Electronics and Communication': path.join(pdfFolder, 'ECE_Course.pdf'),
+    'Information Technology': path.join(pdfFolder, 'IT_Course.pdf'),
+    'Chemical Engineering': path.join(pdfFolder, 'Chemical_Course.pdf'),
+    'English Literature': path.join(pdfFolder, 'English_Course.pdf'),
+    'History': path.join(pdfFolder, 'History_Course.pdf'),
+    'Political Science': path.join(pdfFolder, 'Political_Political_Science_Course.pdf'),
+    'Psychology': path.join(pdfFolder, 'Psychology_Course.pdf'),
+    'Sociology': path.join(pdfFolder, 'Sociology_Course.pdf'),
+    'Economics': path.join(pdfFolder, 'Economics_Course.pdf'),
+    'Fine Arts': path.join(pdfFolder, 'Fine_Arts_Course.pdf')
 };
 
 // Registration API
@@ -55,6 +55,7 @@ app.post('/register', async (req, res) => {
         const pdfPath = coursePDFs[specialization];
 
         if (!pdfPath || !fs.existsSync(pdfPath)) {
+            console.log("Missing PDF →", pdfPath);
             return res.status(404).json({
                 success: false,
                 message: `PDF for ${specialization} not found.`
@@ -72,10 +73,10 @@ app.post('/register', async (req, res) => {
                 <p>Thank You!<br>Phone: 9361531764<br>Name: Vijay</p>
             `,
             attachments: [{
-                filename: `${specialization.replace(/\s+/g, '_')}.pdf`,
-                path: pdfPath
-            }]
-        });
+    filename: `${specialization.replace(/\s+/g, '_')}.pdf`,
+    path: path.join(__dirname, 'pdfs', `${specialization.replace(/\s+/g, '_')}_Course.pdf`)
+}]
+
 
         res.json({ success: true, message: 'Email sent successfully!' });
 
@@ -92,4 +93,3 @@ app.get('/', (req, res) => {
 
 // Start Server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
