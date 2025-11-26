@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // CORS
 app.use(cors({
-    origin: "https://form1-production.up.railway.app",
+    origin: "https://form1-bice.vercel.app",
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -101,4 +101,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
 
