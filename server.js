@@ -6,25 +6,30 @@ const path = require('path');
 
 const app = express();
 
-// ****** IMPORTANT (Render PORT FIX) ******
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// CORS for Vercel
+app.use(cors({
+    origin: "https://your-frontend.vercel.app",
+    methods: ["GET", "POST"],
+    credentials: true
+}));
+
 app.use(express.json());
 
-// *********** Email Transporter ***********
+// Email Transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'expo7590@gmail.com', 
-        pass: 'ljvb tcgk yasj bjrf'  // Gmail App Password only
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
     }
 });
 
-// *********** PDF Folder Correct Path ***********
+// Static PDFs folder
 const pdfFolder = path.join(__dirname, 'pdfs');
 
+// All course PDFs
 const coursePDFs = {
     'Computer Science Engineering': `${pdfFolder}/CSE_Course.pdf`,
     'Mechanical Engineering': `${pdfFolder}/Mechanical_Course.pdf`,
@@ -42,7 +47,7 @@ const coursePDFs = {
     'Fine Arts': `${pdfFolder}/Fine_Arts_Course.pdf`
 };
 
-// *********** Registration Endpoint ***********
+// Registration API
 app.post('/register', async (req, res) => {
     const { name, email, mobile, degree, specialization } = req.body;
 
@@ -50,49 +55,40 @@ app.post('/register', async (req, res) => {
         const pdfPath = coursePDFs[specialization];
 
         if (!pdfPath || !fs.existsSync(pdfPath)) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
-                message: `PDF for ${specialization} not found on server.`
+                message: `PDF for ${specialization} not found.`
             });
         }
 
-        const mailOptions = {
-            from: 'expo7590@gmail.com',
+        await transporter.sendMail({
+            from: process.env.GMAIL_USER,
             to: email,
             subject: `Course Information - ${specialization}`,
             html: `
                 <h2>🎓 Registration Successful!</h2>
                 <p>Hello <b>${name}</b>,</p>
-                <p>Your course details PDF is attached below.</p>
-                <p>Thank you.<br>Ph: 9361531764<br>Name: Vijay</p>
+                <p>Your course details PDF is attached.</p>
+                <p>Thank You!<br>Phone: 9361531764<br>Name: Vijay</p>
             `,
-            attachments: [
-                {
-                    filename: `${specialization.replace(/\s+/g, '_')}.pdf`,
-                    path: pdfPath
-                }
-            ]
-        };
-
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent → ${email}`);
+            attachments: [{
+                filename: `${specialization.replace(/\s+/g, '_')}.pdf`,
+                path: pdfPath
+            }]
+        });
 
         res.json({ success: true, message: 'Email sent successfully!' });
 
-    } catch (error) {
-        console.error('Email Error:', error);
-        res.status(500).json({ success: false, message: 'Email failed to send.' });
+    } catch (err) {
+        console.error("Mail Error:", err);
+        res.status(500).json({ success: false, message: 'Email send failed.' });
     }
 });
 
-// *********** Test Endpoint ***********
+// Test Route
 app.get('/', (req, res) => {
-    res.send("Course Registration API is Running ✔");
+    res.send("API Running ✔");
 });
 
-// *********** Start Server ***********
-app.listen(PORT, () => {
-    console.log(`Server Live on PORT ${PORT}`);
-});
-
-
+// Start Server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
