@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 1000;
 
 // CORS for Vercel
 app.use(cors({
@@ -93,5 +93,6 @@ app.get('/', (req, res) => {
 
 // Start Server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 
